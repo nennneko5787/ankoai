@@ -17,6 +17,9 @@ bot = commands.Bot(
     description="紅葉杏狐だよ♪よろしくね♪",
 )
 
+@bot.event
+async def on_ready():
+    print(bot.user.email)
 
 @bot.event
 async def setup_hook():
