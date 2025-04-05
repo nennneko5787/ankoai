@@ -60,9 +60,6 @@ class AIChatCog(commands.Cog):
         self.chatCoolDown: Dict[int, datetime] = {}
         self.messageQueue = []
 
-        # キュー処理のためのバックグラウンドタスクを開始
-        self.processQueue.start()
-
     def splitText(self, text: str, chunkSize=2000):
         # テキストを指定したサイズで分割
         return [text[i : i + chunkSize] for i in range(0, len(text), chunkSize)]
