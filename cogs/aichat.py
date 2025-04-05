@@ -130,11 +130,6 @@ class AIChatCog(commands.Cog):
         for chunk in self.splitText(content.text):
             await message.reply(chunk)
 
-    @processQueue.before_loop
-    async def beforeProcessQueue(self):
-        # ボットが準備完了するまで待機
-        await self.bot.wait_until_ready()
-
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(AIChatCog(bot))
