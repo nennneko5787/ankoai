@@ -121,26 +121,17 @@ class AIChatCog(commands.Cog):
             ZoneInfo("Asia/Tokyo")
         ) + timedelta(seconds=1)
 
-        # メッセージをキューに追加
-        self.messageQueue.append((message, chat))
+        messages = [message.clean_content]
+        for file in message.attachments:
+            messages.append(Image.open(io.BytesIO(await file.read())))
 
-    @tasks.loop(seconds=5)
-    async def processQueue(self):
-        # キューにメッセージがあれば処理
-        if self.messageQueue:
-            message, chat = self.messageQueue.pop(0)
+        # 生成を開始
+        async with message.channel.typing():
+            content = await chat.send_message(messages)
 
-            # メッセージと添付ファイルをリストにまとめる
-            messages = [message.clean_content]
-            for file in message.attachments:
-                messages.append(Image.open(io.BytesIO(await file.read())))
-
-            # 生成を開始
-            async with message.channel.typing():
-                content = await chat.send_message(messages)
-
-            # 2000文字ごとに区切って返信
-            await message.reply(content.text)
+        # 2000文字ごとに区切って返信
+        for chunk in self.splitText(content.text):
+            await message.reply(chunk)
 
     @processQueue.before_loop
     async def beforeProcessQueue(self):
